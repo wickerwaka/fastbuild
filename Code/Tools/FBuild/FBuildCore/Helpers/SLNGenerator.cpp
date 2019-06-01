@@ -266,10 +266,13 @@ void SLNGenerator::WriteProjectConfigurationPlatforms( const Array< SolutionConf
 
         for( const SolutionConfig & solutionConfig : solutionConfigs )
         {
+            const VSProjectConfig * projectConfig = project->FindConfig( solutionConfig.m_Platform, solutionConfig.m_Config );
+            ASSERT( projectConfig != nullptr ); // SLNNode should have errored
+
             Write( "\t\t%s.%s|%s.ActiveCfg = %s|%s\r\n",
                    projectGuid.Get(),
                    solutionConfig.m_SolutionConfig.Get(), solutionConfig.m_SolutionPlatform.Get(),
-                   solutionConfig.m_Config.Get(), solutionConfig.m_Platform.Get() );
+                   projectConfig->m_Config.Get(), projectConfig->m_Platform.Get() );
 
             // Is project active in solution build?
             bool projectIsActive = false;
@@ -298,14 +301,14 @@ void SLNGenerator::WriteProjectConfigurationPlatforms( const Array< SolutionConf
                 Write( "\t\t%s.%s|%s.Build.0 = %s|%s\r\n",
                        projectGuid.Get(),
                        solutionConfig.m_SolutionConfig.Get(), solutionConfig.m_SolutionPlatform.Get(),
-                       solutionConfig.m_Config.Get(), solutionConfig.m_Platform.Get() );
+                       projectConfig->m_Config.Get(), projectConfig->m_Platform.Get() );
             }
             if ( projectDeployEnabled )
             {
                 Write( "\t\t%s.%s|%s.Deploy.0 = %s|%s\r\n",
                        projectGuid.Get(),
                        solutionConfig.m_SolutionConfig.Get(), solutionConfig.m_SolutionPlatform.Get(),
-                       solutionConfig.m_Config.Get(), solutionConfig.m_Platform.Get() );
+                       projectConfig->m_Config.Get(), projectConfig->m_Platform.Get() );
             }
 
         }

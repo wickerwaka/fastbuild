@@ -224,18 +224,9 @@ SLNNode::SLNNode()
         // check that this Project contains all .SolutionConfigs
         for ( const SolutionConfig & solutionConfig : m_SolutionConfigs )
         {
-            bool containsConfig = false;
-            for ( const VSProjectConfig & projectConfig : project->GetConfigs() )
-            {
-                if ( ( projectConfig.m_Platform == solutionConfig.m_Platform ) &&
-                     ( projectConfig.m_Config == solutionConfig.m_Config ) )
-                {
-                    containsConfig = true;
-                    break;
-                }
-            }
+            const VSProjectConfig * projectConfig = project->FindConfig( solutionConfig.m_Platform, solutionConfig.m_Config );
 
-            if ( containsConfig == false )
+            if ( projectConfig == nullptr )
             {
                 // TODO: specific error message "ProjectConfigNotFound"
                 AStackString<> configName;
