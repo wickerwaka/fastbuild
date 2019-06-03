@@ -83,7 +83,7 @@ REFLECT_NODE_BEGIN( VCXProjectNode, Node, MetaName( "ProjectOutput" ) + MetaFile
     REFLECT_ARRAY(  m_ProjectAllowedFileExtensions, "ProjectAllowedFileExtensions", MetaOptional() )
     REFLECT_ARRAY_OF_STRUCT(    m_ProjectConfigs,   "ProjectConfigs",               VSProjectConfig,    MetaOptional() )
     REFLECT_ARRAY_OF_STRUCT(    m_ProjectFileTypes, "ProjectFileTypes",             VSProjectFileType,  MetaOptional() )
-    REFLECT_ARRAY_OF_STRUCT(    m_ProjectConfigMappings, "ProjectConfigMapping",    VSProjectConfigMapping,  MetaOptional() )
+    REFLECT_ARRAY_OF_STRUCT(    m_ProjectConfigMappings, "ProjectConfigMappings",   VSProjectConfigMapping,  MetaOptional() )
 
     REFLECT(        m_RootNamespace,                "RootNamespace",                MetaOptional() )
     REFLECT(        m_ProjectGuid,                  "ProjectGuid",                  MetaOptional() )
