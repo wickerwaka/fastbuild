@@ -66,6 +66,13 @@ REFLECT_STRUCT_BEGIN_BASE( VSProjectFileType )
     REFLECT(        m_Pattern,                      "Pattern",                      MetaNone() )
 REFLECT_END( VSProjectFileType )
 
+REFLECT_STRUCT_BEGIN_BASE( VSProjectConfigMapping )
+    REFLECT(        m_SolutionConfig,               "SolutionConfig",               MetaNone() )
+    REFLECT(        m_SolutionPlatform,             "SolutionPlatform",             MetaNone() )
+    REFLECT(        m_ProjectConfig,                "ProjectConfig",                MetaOptional() )
+    REFLECT(        m_ProjectPlatform,              "ProjectPlatform",              MetaOptional() )
+REFLECT_END( VSProjectConfigMapping )
+
 REFLECT_NODE_BEGIN( VCXProjectNode, Node, MetaName( "ProjectOutput" ) + MetaFile() )
     REFLECT_ARRAY(  m_ProjectInputPaths,            "ProjectInputPaths",            MetaOptional() + MetaPath() )
     REFLECT_ARRAY(  m_ProjectInputPathsExclude,     "ProjectInputPathsExclude",     MetaOptional() + MetaPath() )
@@ -76,6 +83,7 @@ REFLECT_NODE_BEGIN( VCXProjectNode, Node, MetaName( "ProjectOutput" ) + MetaFile
     REFLECT_ARRAY(  m_ProjectAllowedFileExtensions, "ProjectAllowedFileExtensions", MetaOptional() )
     REFLECT_ARRAY_OF_STRUCT(    m_ProjectConfigs,   "ProjectConfigs",               VSProjectConfig,    MetaOptional() )
     REFLECT_ARRAY_OF_STRUCT(    m_ProjectFileTypes, "ProjectFileTypes",             VSProjectFileType,  MetaOptional() )
+    REFLECT_ARRAY_OF_STRUCT(    m_ProjectConfigMappings, "ProjectConfigMapping",    VSProjectConfigMapping,  MetaOptional() )
 
     REFLECT(        m_RootNamespace,                "RootNamespace",                MetaOptional() )
     REFLECT(        m_ProjectGuid,                  "ProjectGuid",                  MetaOptional() )
@@ -205,6 +213,56 @@ VCXProjectNode::VCXProjectNode()
 // DESTRUCTOR
 //------------------------------------------------------------------------------
 VCXProjectNode::~VCXProjectNode() = default;
+
+
+// FindConfig
+//------------------------------------------------------------------------------
+const VSProjectConfig * VCXProjectNode::FindConfig( const AString & platform, const AString & config ) const
+{
+    AString remappedPlatform, remappedConfig;
+    bool remapped = false;
+
+    for ( const VSProjectConfigMapping & mapping : m_ProjectConfigMappings )
+    {
+        if ( platform.MatchesI( mapping.m_SolutionPlatform.Get() ) && config.MatchesI( mapping.m_SolutionConfig.Get() ) )
+        {
+            if ( mapping.m_ProjectPlatform.IsEmpty() )
+            {
+                remappedPlatform.Assign( platform );
+            }
+            else
+            {
+                remappedPlatform.Assign( mapping.m_ProjectPlatform );
+            }
+
+            if ( mapping.m_ProjectConfig.IsEmpty() )
+            {
+                remappedConfig.Assign( config );
+            }
+            else
+            {
+                remappedConfig.Assign( mapping.m_ProjectConfig );
+            }
+            remapped = true;
+            break;
+        }
+    }
+
+    if ( !remapped )
+    {
+        remappedPlatform.Assign( platform );
+        remappedConfig.Assign( config );
+    }
+
+    for ( const VSProjectConfig & projectConfig : m_ProjectConfigs )
+    {
+        if ( projectConfig.m_Platform == remappedPlatform && projectConfig.m_Config == remappedConfig )
+        {
+            return &projectConfig;
+        }
+    }
+    return nullptr;
+}
 
 // DoBuild
 //------------------------------------------------------------------------------

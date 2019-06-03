@@ -84,6 +84,18 @@ public:
     AString             m_Pattern;  // e.g. "Code\Forms\*.h" (can be full filename also)
 };
 
+// VSProjectConfigMapping
+//------------------------------------------------------------------------------
+class VSProjectConfigMapping : public Struct
+{
+    REFLECT_STRUCT_DECLARE( VSProjectConfigMapping )
+public:
+    AString             m_SolutionConfig;
+    AString             m_SolutionPlatform;
+    AString             m_ProjectConfig;
+    AString             m_ProjectPlatform;
+};
+
 // VCXProjectNode
 //------------------------------------------------------------------------------
 class VCXProjectNode : public FileNode
@@ -98,6 +110,7 @@ public:
 
     const AString & GetProjectGuid() const { return m_ProjectGuid; }
     const Array< VSProjectConfig > & GetConfigs() const { return m_ProjectConfigs; }
+    const VSProjectConfig * FindConfig( const AString & platform, const AString & config ) const;
 
 private:
     virtual BuildResult DoBuild( Job * job ) override;
@@ -116,6 +129,7 @@ private:
     VSProjectConfigBase m_BaseProjectConfig;
     Array< VSProjectConfig > m_ProjectConfigs;
     Array< VSProjectFileType > m_ProjectFileTypes;
+    Array< VSProjectConfigMapping > m_ProjectConfigMappings;
 
     AString             m_RootNamespace;
     AString             m_ProjectGuid;
