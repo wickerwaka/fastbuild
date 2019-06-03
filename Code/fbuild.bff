@@ -544,3 +544,21 @@ Alias( 'All+Tests' )
 #endif
 
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Custom Treyarch Deploy Rules
+//------------------------------------------------------------------------------
+{
+    .DeployPath = '../../../../../tools/FBuild'
+    
+    Copy( 'Treyarch-Deploy' )
+    {
+        .Dest = "$DeployPath$\"
+        .Source =
+        {
+            '..\tmp\x64-Release\Tools\FBuild\FBuildApp\FBuild.exe'
+            '..\tmp\x64-Release\Tools\FBuild\FBuildWorker\FBuildWorker.exe'
+        }
+        .PreBuildDependencies = { 'All-x64-Release' }
+    }    
+}
