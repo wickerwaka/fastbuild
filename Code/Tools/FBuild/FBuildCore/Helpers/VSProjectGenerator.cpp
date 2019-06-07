@@ -113,14 +113,32 @@ const AString & VSProjectGenerator::GenerateVCXProj( const AString & projectFile
 
     // Project Configurations
     {
-        Write( "  <ItemGroup Label=\"ProjectConfigurations\">\n" );
-        const VSProjectConfig * const cEnd = configs.End();
-        for ( const VSProjectConfig * cIt = configs.Begin(); cIt!=cEnd; ++cIt )
+        // Collect all platforms and configurations in the project
+        Array< const AString * > allPlatforms( configs.GetSize() );
+        Array< const AString * > allConfigs( configs.GetSize() );
+        for ( const VSProjectConfig & projectConfig : configs )
         {
-            Write( "    <ProjectConfiguration Include=\"%s|%s\">\n", cIt->m_Config.Get(), cIt->m_Platform.Get() );
-            Write( "      <Configuration>%s</Configuration>\n", cIt->m_Config.Get() );
-            Write( "      <Platform>%s</Platform>\n", cIt->m_Platform.Get() );
-            Write( "    </ProjectConfiguration>\n" );
+            if ( !allPlatforms.FindDeref( projectConfig.m_Platform ) )
+            {
+                allPlatforms.Append( &projectConfig.m_Platform );
+            }
+
+            if ( !allConfigs.FindDeref( projectConfig.m_Config ) )
+            {
+                allConfigs.Append( &projectConfig.m_Config );
+            }
+        }
+
+        Write( "  <ItemGroup Label=\"ProjectConfigurations\">\n" );
+        for ( const AString * platform : allPlatforms )
+        {
+            for ( const AString * config : allConfigs )
+            {
+                Write( "    <ProjectConfiguration Include=\"%s|%s\">\n", config->Get(), platform->Get() );
+                Write( "      <Configuration>%s</Configuration>\n", config->Get() );
+                Write( "      <Platform>%s</Platform>\n", platform->Get() );
+                Write( "    </ProjectConfiguration>\n" );
+            }
         }
         Write( "  </ItemGroup>\n" );
     }
