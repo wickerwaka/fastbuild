@@ -116,6 +116,7 @@ int Worker::Work()
     if ( m_ConnectionPool->Listen( Protocol::PROTOCOL_PORT ) == false )
     {
         ErrorMessage( "Failed to listen on port %u.  Check port is not in use.", Protocol::PROTOCOL_PORT );
+        m_MainWindow->SetAllowQuit();
         return -1;
     }
 
@@ -132,6 +133,7 @@ int Worker::Work()
         if ( !FileIO::EnsurePathExists( tmpPath ) )
         {
             ErrorMessage( "Failed to initialize tmp folder. Error: %s", LAST_ERROR_STR );
+            m_MainWindow->SetAllowQuit();
             return -2;
         }
         #if defined( __WINDOWS__ )
@@ -142,6 +144,7 @@ int Worker::Work()
         if ( !m_TargetIncludeFolderLock.Open( tmpPath.Get(), FileStream::WRITE_ONLY ) )
         {
             ErrorMessage( "Failed to lock tmp folder. Error: %s", LAST_ERROR_STR );
+            m_MainWindow->SetAllowQuit();
             return -2;
         }
     }
